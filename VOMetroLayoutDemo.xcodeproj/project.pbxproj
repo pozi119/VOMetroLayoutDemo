@@ -14,6 +14,7 @@
 		3E4681DC1A66117E00959DEF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E4681DB1A66117E00959DEF /* Images.xcassets */; };
 		3E4681DF1A66117E00959DEF /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3E4681DD1A66117E00959DEF /* LaunchScreen.xib */; };
 		3E4681EB1A66117E00959DEF /* VOMetroLayoutDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4681EA1A66117E00959DEF /* VOMetroLayoutDemoTests.m */; };
+		3E4681F71A6611AA00959DEF /* VOMetroLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4681F61A6611AA00959DEF /* VOMetroLayout.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,8 @@
 		3E4681E41A66117E00959DEF /* VOMetroLayoutDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VOMetroLayoutDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E4681E91A66117E00959DEF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3E4681EA1A66117E00959DEF /* VOMetroLayoutDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VOMetroLayoutDemoTests.m; sourceTree = "<group>"; };
+		3E4681F51A6611AA00959DEF /* VOMetroLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VOMetroLayout.h; sourceTree = "<group>"; };
+		3E4681F61A6611AA00959DEF /* VOMetroLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VOMetroLayout.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +84,7 @@
 		3E4681CD1A66117E00959DEF /* VOMetroLayoutDemo */ = {
 			isa = PBXGroup;
 			children = (
+				3E4681F41A6611AA00959DEF /* VOMetroLayout */,
 				3E4681D21A66117E00959DEF /* AppDelegate.h */,
 				3E4681D31A66117E00959DEF /* AppDelegate.m */,
 				3E4681D51A66117E00959DEF /* ViewController.h */,
@@ -117,6 +121,15 @@
 				3E4681E91A66117E00959DEF /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		3E4681F41A6611AA00959DEF /* VOMetroLayout */ = {
+			isa = PBXGroup;
+			children = (
+				3E4681F51A6611AA00959DEF /* VOMetroLayout.h */,
+				3E4681F61A6611AA00959DEF /* VOMetroLayout.m */,
+			);
+			path = VOMetroLayout;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -219,6 +232,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E4681F71A6611AA00959DEF /* VOMetroLayout.m in Sources */,
 				3E4681D71A66117E00959DEF /* ViewController.m in Sources */,
 				3E4681D41A66117E00959DEF /* AppDelegate.m in Sources */,
 				3E4681D11A66117E00959DEF /* main.m in Sources */,
@@ -414,6 +428,7 @@
 				3E4681F01A66117E00959DEF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3E4681F11A66117E00959DEF /* Build configuration list for PBXNativeTarget "VOMetroLayoutDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -422,6 +437,7 @@
 				3E4681F31A66117E00959DEF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
