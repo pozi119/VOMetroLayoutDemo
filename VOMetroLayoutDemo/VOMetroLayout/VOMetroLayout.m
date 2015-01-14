@@ -38,11 +38,15 @@
 - (void)prepareLayout{
     [super prepareLayout];
     //TODO,暂只支持横向
-    self.areaSize               = [self calcAreaSize];
-    NSUInteger unitsPerVertical = (self.areaSize.height + self.minimumLineSpacing) / (self.itemSize.height + self.minimumLineSpacing);
-    self.unitsPerArea           = unitsPerVertical / 2 * 8;
+    self.areaSize         = [self calcAreaSize];
+    if (self.unitsPerSide == 0) {
+        self.unitsPerSide = 10;
+    }
+    CGFloat length        = (self.areaSize.height + self.minimumLineSpacing) / self.unitsPerSide - self.minimumLineSpacing;
+    self.itemSize         = CGSizeMake(length, length);
+    self.unitsPerArea     = self.unitsPerSide * 4;
     if (self.areaSpacing <= 0) {
-        self.areaSpacing            = self.minimumInteritemSpacing * 2;
+        self.areaSpacing  = self.minimumInteritemSpacing * 2;
     }
     [self generateMetroAttrsArrays];
 }
@@ -154,18 +158,19 @@
     headerFrame.size = self.headerReferenceSize;
     footerFrame.size = self.footerReferenceSize;
     for (NSUInteger section = 0; section < self.styleArray.count; section ++) {
-        //
-        areaPos.x += self.sectionInset.right;
-        areaPos.y = self.sectionInset.top;
         // header
+        areaPos.y = 0;
         headerFrame.origin = areaPos;
         [headerFrameArray addObject:[NSValue valueWithCGRect:headerFrame]];
         if (self.headerFooterPostion == VOMetroHeaderFooterPositionVertical) {
-            areaPos.y += self.headerReferenceSize.height;
+            areaPos.y = self.headerReferenceSize.height;
         }
         else{
             areaPos.x += self.headerReferenceSize.width;
         }
+        // area
+        areaPos.x += self.sectionInset.right;
+        areaPos.y += self.sectionInset.top;
         // cell
         NSArray *sectionStyles     = self.styleArray[section];
         NSUInteger curArea         = 0;
@@ -198,6 +203,7 @@
         [cellAttrsArray addObject:sectionAttrsArray];
         // section结束
         areaPos.x += self.areaSize.width;
+        areaPos.x += self.sectionInset.right;
         // footer
         if (self.headerFooterPostion == VOMetroHeaderFooterPositionHorizontal) {
             footerFrame.origin.x = areaPos.x;
@@ -206,10 +212,9 @@
         }
         else{
             footerFrame.origin.x = headerFrame.origin.x;
-            footerFrame.origin.y = self.collectionViewContentSize.height - self.sectionInset.bottom - self.footerReferenceSize.height;
+            footerFrame.origin.y = self.collectionViewContentSize.height - self.footerReferenceSize.height;
         }
         [footerFrameArray addObject:[NSValue valueWithCGRect:footerFrame]];
-        areaPos.x += self.sectionInset.right;
     }
     self.cellAttrsArray   = cellAttrsArray;
     self.headerFrameArray = headerFrameArray;

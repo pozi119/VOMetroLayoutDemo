@@ -112,7 +112,8 @@ typedef NS_ENUM(NSUInteger, VOMetroHeaderFooterPosition) {
 @interface VOMetroLayout : UICollectionViewFlowLayout
 
 @property (nonatomic, strong) NSArray    *styleArray;    //布局数据,VOMetroCellStyle 组成的数组
-@property (nonatomic, assign) CGFloat   areaSpacing;     // 每个区域的间距, 默认为minimumInteritemSpacing的2倍
+@property (nonatomic, assign) CGFloat    areaSpacing;    //每个区域的间距, 默认为minimumInteritemSpacing的2倍
+@property (nonatomic, assign) NSUInteger unitsPerSide;   //每个高度(纵向为宽度,暂不支持)能容纳unit数量
 
 /**
  * header和footer
