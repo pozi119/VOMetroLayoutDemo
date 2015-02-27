@@ -19,12 +19,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.metroLayout.styleArray = @[@[@(1),@(0),@(0),@(0),@(2),@(3),@(0),@(2),@(3)],
-                                    @[@(2),@(2),@(2),@(2),@(2),@(2),@(3)],
-                                    @[@(1),@(0),@(0),@(0),@(0),@(2),@(3)]];
 }
 
 -(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
+    self.metroLayout.styleArray = @[@[@(1),@(0),@(0),@(0),@(2),@(3),@(0),@(2),@(3)],
+                                    @[@(2),@(2),@(2),@(2),@(2),@(2),@(3)],
+                                    @[@(1),@(0),@(0),@(0),@(0),@(2),@(3)]];
     return self.metroLayout.styleArray.count;
 }
 

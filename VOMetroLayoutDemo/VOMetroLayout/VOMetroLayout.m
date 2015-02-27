@@ -30,24 +30,36 @@
 @property (nonatomic, strong) NSArray   *headerFrameArray;
 @property (nonatomic, strong) NSArray   *footerFrameArray;
 @property (nonatomic, assign) CGSize    areaSize;
-
+@property (nonatomic, assign) CGSize    contentSize;
 @end
 
 @implementation VOMetroLayout
 
+- (instancetype)initWithFlowLayout:(UICollectionViewFlowLayout *)flowLayout{
+    if (self = [super init]) {
+        self.minimumLineSpacing      = flowLayout.minimumLineSpacing;
+        self.minimumInteritemSpacing = flowLayout.minimumInteritemSpacing;
+        self.estimatedItemSize       = flowLayout.estimatedItemSize;
+        self.headerReferenceSize     = flowLayout.headerReferenceSize;
+        self.footerReferenceSize     = flowLayout.footerReferenceSize;
+        self.sectionInset            = flowLayout.sectionInset;
+        self.scrollDirection         = UICollectionViewScrollDirectionHorizontal;
+    }
+    return self;
+}
+
 - (void)prepareLayout{
     [super prepareLayout];
     //TODO,暂只支持横向
-    self.areaSize         = [self calcAreaSize];
+    self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     if (self.unitsPerSide == 0) {
-        self.unitsPerSide = 10;
+        self.unitsPerSide = 8;
     }
-    CGFloat length        = (self.areaSize.height + self.minimumLineSpacing) / self.unitsPerSide - self.minimumLineSpacing;
-    self.itemSize         = CGSizeMake(length, length);
     self.unitsPerArea     = self.unitsPerSide * 4;
     if (self.areaSpacing <= 0) {
-        self.areaSpacing  = self.minimumInteritemSpacing * 2;
+        self.areaSpacing  = self.minimumInteritemSpacing;
     }
+    [self calcAreaSizeAndItemSize];
     [self generateMetroAttrsArrays];
 }
 
@@ -58,16 +70,16 @@
     }
     return NO;
 }
-
-- (void)setStyleArray:(NSArray *)styleArray{
-    if (![_styleArray isEqual:styleArray]) {
-        _styleArray = styleArray;
-        [self invalidateLayout];
-    }
-}
+//
+//- (void)setStyleArray:(NSArray *)styleArray{
+//    if (![_styleArray isEqual:styleArray]) {
+//        _styleArray = styleArray;
+//        [self invalidateLayout];
+//    }
+//}
 
 #pragma mark 计算area size
-- (CGSize)calcAreaSize{
+- (void)calcAreaSizeAndItemSize{
     CGSize size = CGSizeZero;
     size.height = self.collectionView.frame.size.height;
     size.height -= self.sectionInset.top + self.sectionInset.bottom;
@@ -75,29 +87,15 @@
         size.height -= self.headerReferenceSize.height;
         size.height -= self.footerReferenceSize.height;
     }
-    size.width  = self.itemSize.width * 4 + self.minimumInteritemSpacing * 3;
-    return size;
+    CGFloat length = (size.height + self.minimumLineSpacing) / self.unitsPerSide - self.minimumLineSpacing;
+    self.itemSize  = CGSizeMake(length, length);
+    size.width     = self.itemSize.width * 4 + self.minimumInteritemSpacing * 3;
+    self.areaSize  = size;
 }
 
 #pragma mark 计算ContentSize
 - (CGSize)collectionViewContentSize{
-    CGSize size = CGSizeZero;
-    //TODO,暂只支持横向
-    size.height = self.collectionView.bounds.size.height;
-    size.height += self.collectionView.contentInset.top + self.collectionView.contentInset.bottom;
-    for (NSUInteger i = 0 ; i < self.cellAttrsArray.count; i ++) {
-        NSArray *sectionAttrs = self.cellAttrsArray[i];
-        VOMetroAttributes *attrs = sectionAttrs.lastObject;
-        NSUInteger areaCount = attrs.area + 1;
-        size.width += areaCount * self.areaSize.width + (areaCount - 1) * self.areaSpacing;
-        size.width += self.sectionInset.left + self.sectionInset.right;
-        if (self.headerFooterPostion == VOMetroHeaderFooterPositionHorizontal) {
-            size.width += self.headerReferenceSize.width;
-            size.width += self.footerReferenceSize.width;
-        }
-    }
-    size.width += self.collectionView.contentInset.left + self.collectionView.contentInset.right;
-    return size;
+    return self.contentSize;
 }
 
 #pragma mark 每个Item的attributes
@@ -126,7 +124,7 @@
         [attributesArray addObject:attributes];
     }
     
-    // header attributes
+    // footer attributes
     NSArray *footerIndexPaths = [self indexPathsOfFootersInRect:rect];
     for (NSIndexPath *indexPath in footerIndexPaths) {
         UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionFooter atIndexPath:indexPath];
@@ -153,6 +151,8 @@
     NSMutableArray *cellAttrsArray   = [NSMutableArray array];
     NSMutableArray *headerFrameArray = [NSMutableArray array];
     NSMutableArray *footerFrameArray = [NSMutableArray array];
+    CGSize contentSize = CGSizeZero;
+    contentSize.height = self.collectionView.frame.size.height;
     CGPoint areaPos  = CGPointZero;
     CGRect headerFrame, footerFrame;
     headerFrame.size = self.headerReferenceSize;
@@ -161,15 +161,21 @@
         // header
         areaPos.y = 0;
         headerFrame.origin = areaPos;
-        [headerFrameArray addObject:[NSValue valueWithCGRect:headerFrame]];
+        headerFrame.origin.x += self.sectionInset.left;
         if (self.headerFooterPostion == VOMetroHeaderFooterPositionVertical) {
             areaPos.y = self.headerReferenceSize.height;
+            headerFrame.size.width = self.areaSize.width;
         }
         else{
             areaPos.x += self.headerReferenceSize.width;
+            headerFrame.size.height = self.areaSize.height;
         }
+        if (!CGSizeEqualToSize(headerFrame.size, CGSizeZero)) {
+            [headerFrameArray addObject:[NSValue valueWithCGRect:headerFrame]];
+        }
+
         // area
-        areaPos.x += self.sectionInset.right;
+        areaPos.x += self.sectionInset.left;
         areaPos.y += self.sectionInset.top;
         // cell
         NSArray *sectionStyles     = self.styleArray[section];
@@ -212,10 +218,14 @@
         }
         else{
             footerFrame.origin.x = headerFrame.origin.x;
-            footerFrame.origin.y = self.collectionViewContentSize.height - self.footerReferenceSize.height;
+            footerFrame.origin.y = contentSize.height - self.footerReferenceSize.height;
         }
-        [footerFrameArray addObject:[NSValue valueWithCGRect:footerFrame]];
+        if (!CGSizeEqualToSize(footerFrame.size, CGSizeZero)) {
+            [footerFrameArray addObject:[NSValue valueWithCGRect:footerFrame]];
+        }
     }
+    contentSize.width = areaPos.x + self.areaSpacing;
+    self.contentSize  = contentSize;
     self.cellAttrsArray   = cellAttrsArray;
     self.headerFrameArray = headerFrameArray;
     self.footerFrameArray = footerFrameArray;
@@ -286,6 +296,12 @@
             frame.size.height = self.itemSize.height * 4  + self.minimumLineSpacing * 3;
             break;
             
+        case VOMetroCellLargeRectangle:
+            attrs.sizeUnits = 24;
+            frame.size.width = self.itemSize.width * 4  + self.minimumInteritemSpacing * 3;
+            frame.size.height = self.itemSize.height * 6  + self.minimumLineSpacing * 5;
+            break;
+            
         default:
             attrs.sizeUnits = 4;
             frame.size.width = self.itemSize.width * 2 + self.minimumInteritemSpacing;
@@ -294,6 +310,16 @@
     }
     attrs.frame = frame;
     return attrs;
+}
+
+-(void)prepareForCollectionViewUpdates:(NSArray *)updateItems
+{
+    //???, cell 插入,删除动画
+//    [updateItems enumerateObjectsUsingBlock:^(UICollectionViewUpdateItem *updateItem, NSUInteger idx, BOOL *stop) {
+//        NSLog(@"%@", updateItem);
+//    }];
+    [super prepareForCollectionViewUpdates:updateItems];
+    
 }
 
 @end

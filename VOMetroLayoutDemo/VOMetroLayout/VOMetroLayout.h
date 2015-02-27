@@ -101,6 +101,7 @@ typedef NS_ENUM(NSUInteger, VOMetroCellStyle) {
     VOMetroCellNormalSquare,        // 普通正方形, 4个units
     VOMetroCellRectangle,           // 长方形, 8个units
     VOMetroCellLargeSquare,         // 大正方形, 16个units
+    VOMetroCellLargeRectangle,      // 大长方形, 24个units
 };
 
 typedef NS_ENUM(NSUInteger, VOMetroHeaderFooterPosition) {
@@ -121,5 +122,7 @@ typedef NS_ENUM(NSUInteger, VOMetroHeaderFooterPosition) {
  * 它们的位置不使用flowLayout根据滚动方向自动判断的方式.使用以下这个属性进行设置
  */
 @property (nonatomic, assign) VOMetroHeaderFooterPosition  headerFooterPostion;    // 默认为VOMetroHeaderFooterPositionVertical, 在上下位置
+
+- (instancetype)initWithFlowLayout:(UICollectionViewFlowLayout *)flowLayout;
 
 @end
